@@ -71,7 +71,7 @@ int open_connection(int port) {
 
   bind(sock, (struct sockaddr *) &addr_in, sizeof(struct sockaddr_in));
 
-  if (listen(sock, 0) == -1) {
+  if (listen(sock, 8) == -1) {
     printf("Failed to get socket to listen (%d)\n", errno);
     exit(EXIT_FAILURE);
   }
