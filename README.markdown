@@ -7,4 +7,4 @@ You can test this program at ipconfig.herokuapp.com:
 
 # Known problems
 
-* Heroku does not filter values for the `X-Forwarded-For` header: `curl -s http://ipconfig.herokuapp.com/ -H 'X-Forwarded-For: ", "attack": true, "foo": "bar'`
+* Heroku does not filter values for the `X-Forwarded-For` header: `curl -s http://ipconfig.herokuapp.com/ -H 'X-Forwarded-For: ", "attack": true, "foo": "bar'` (see [#1](https://github.com/JanAhrens/ipconfig-http-server/issues/1)).
