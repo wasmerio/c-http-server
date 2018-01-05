@@ -10,16 +10,11 @@
 
 #define MAX_LINE_LENGTH (1024)
 
-void send_response(FILE *f, int address_found, char *ip_address) {
+void send_response(FILE *f, char *key, char *value) {
   fprintf(f, "HTTP/1.1 200 OK\r\n");
   fprintf(f, "Content-Type: application/json\r\n");
   fprintf(f, "\r\n");
-
-  if (!address_found) {
-    fprintf(f, "{\"address\": \"UNKNOWN\"}");
-  } else {
-    fprintf(f, "{\"address\": \"%s\"}", ip_address);
-  }
+  fprintf(f, "{\"%s\": \"%s\"}", key, value);
 }
 
 int extract_ip_address_from_header(char *line, char *address) {
@@ -54,6 +49,26 @@ int extract_ip_address_from_header(char *line, char *address) {
   return found;
 }
 
+char * get_ip_address(FILE *f) {
+  int address_found = 0;
+  char *res;
+  char *ip_address = malloc (sizeof (char) * MAX_LINE_LENGTH);
+  char header_line[MAX_LINE_LENGTH];
+
+  do {
+    res = fgets(header_line, MAX_LINE_LENGTH, f);
+
+    if (res != NULL) {
+      printf("%s", res);
+      if (!address_found) {
+        address_found = extract_ip_address_from_header(res, ip_address);
+      }
+    }
+  } while (res != NULL && strcmp(header_line, "\r\n") != 0);
+
+  return ip_address;
+}
+
 int open_connection(int port) {
   int sock;
   struct sockaddr_in addr_in;
@@ -80,13 +95,9 @@ int open_connection(int port) {
 }
 
 void accept_client(int sock) {
-  int address_found = 0;
   struct sockaddr_in client_addr;
   socklen_t clientaddr_len;
-  char header_line[MAX_LINE_LENGTH];
-  char *res;
   FILE *f;
-  char ip_address[MAX_LINE_LENGTH];
 
   int client_sock = accept(sock, (struct sockaddr *)&client_addr, &clientaddr_len);
   if (client_sock == -1) {
@@ -96,18 +107,7 @@ void accept_client(int sock) {
 
   f = fdopen(client_sock, "w+");
 
-  do {
-    res = fgets(header_line, MAX_LINE_LENGTH, f);
-
-    if (res != NULL) {
-      printf("%s", res);
-      if (!address_found) {
-        address_found = extract_ip_address_from_header(res, ip_address);
-      }
-    }
-  } while (res != NULL && strcmp(header_line, "\r\n") != 0);
-
-  send_response(f, address_found, ip_address);
+  send_response(f, "myaddress", get_ip_address(f));
 
   fclose(f);
 
