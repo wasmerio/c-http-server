@@ -41,7 +41,7 @@ int open_connection(int port) {
   return sock;
 }
 
-void accept_client(int sock) {
+void accept_client(int sock, char* key) {
   struct sockaddr_in client_addr;
   socklen_t clientaddr_len;
   FILE *f;
@@ -54,7 +54,7 @@ void accept_client(int sock) {
 
   f = fdopen(client_sock, "w+");
 
-  send_response(f, "myaddress", get_ip_address(f));
+  send_response(f, key, get_ip_address(f));
 
   fclose(f);
 
@@ -62,21 +62,27 @@ void accept_client(int sock) {
   fflush(stdout);
 }
 
-int main(int argc, char **argv) {
-  int port;
+/**
+ * This HTTP server can only send HTTP responses.
+ * It requires header files such as ipaddress.h to read the headers.
+ */
+void send_only(int port, char* key) {
+  int sock = open_connection(port);
 
+  while (1) {
+    accept_client(sock, key);
+  }
+  close(sock);
+}
+
+int main(int argc, char **argv) {
   if (argc != 2) {
     printf("%s [port-number]\n", argv[0]);
     exit(EXIT_FAILURE);
   }
 
-  port = atoi(argv[1]);
-  int sock = open_connection(port);
+  int port = atoi(argv[1]); 
+  send_only(port, "address");
 
-  while (1) {
-    accept_client(sock);
-  }
-
-  close(sock);
   exit(EXIT_SUCCESS);
 }
