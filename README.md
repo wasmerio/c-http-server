@@ -4,7 +4,7 @@ A minimal HTTP server, written in C by [Jan Ahrens](https://github.com/JanAhrens
 
 See it working [here](https://c-http-rdm.herokuapp.com).
 
-The C script is compiled using the Heroku C buildpack. Once you've created an app with the C [buildpack](https://github.com/heroku/heroku-buildpack-c), you can...
+The C script can be compiled using the Heroku C [buildpack](https://github.com/heroku/heroku-buildpack-c). I've included the necessary files, so you can...
 
 ## Deploy to Heroku
 
