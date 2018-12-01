@@ -22,7 +22,7 @@ int open_connection(int port)
   int sock;
   struct sockaddr_in addr_in;
 
-  printf("simpleserver::Creating socket\n");
+  printf("simpleserver::Creating socket: (%d, %d, 0)\n", AF_INET, SOCK_STREAM);
   sock = socket(AF_INET, SOCK_STREAM, 0);
   printf("simpleserver::Socket created (%d)\n", sock);
 
@@ -36,11 +36,11 @@ int open_connection(int port)
   addr_in.sin_port = htons(port);
   addr_in.sin_addr.s_addr = INADDR_ANY;
 
-  printf("simpleserver::bind\n");
+  printf("simpleserver::bind (%d, (%d, %d, %d), %lu)\n", sock, addr_in.sin_family, addr_in.sin_port, addr_in.sin_addr.s_addr, sizeof(struct sockaddr_in));
 
   bind(sock, (struct sockaddr *)&addr_in, sizeof(struct sockaddr_in));
 
-  printf("simpleserver::listen\n");
+  printf("simpleserver::listen(%d, 8)\n", sock);
 
   if (listen(sock, 8) == -1)
   {
@@ -57,7 +57,10 @@ void accept_client(int sock, char *key)
   socklen_t clientaddr_len;
   FILE *f;
 
+  printf("simpleserver::accept(%d)\n", sock);
+
   int client_sock = accept(sock, (struct sockaddr *)&client_addr, &clientaddr_len);
+  printf("simpleserver::accepted (%d)\n", client_sock);
   if (client_sock == -1)
   {
     printf("Failed to accept connection (%d)\n", errno);
