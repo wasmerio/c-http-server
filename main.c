@@ -67,14 +67,21 @@ void accept_client(int sock, char *key)
     exit(EXIT_FAILURE);
   }
 
+  printf("simpleserver::fdopen(%d)\n", client_sock);
   f = fdopen(client_sock, "w+");
+  if (f == NULL)
+    printf("simpleserver::Error during fdopen\n");
 
+  printf("simpleserver::send_response(%s)\n", key);
   send_response(f, key, get_ip_address(f));
 
+  printf("simpleserver::fclose()\n");
   fclose(f);
 
+  printf("simpleserver::fflush\n");
   // stdout needs to be flushed in order for heroku to read the logs
   fflush(stdout);
+  printf("simpleserver::endfflush\n");
 }
 
 /**
